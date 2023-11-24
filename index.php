@@ -3,7 +3,7 @@
 class Animal{
     protected $name;
 
-    public function __construct($name)
+    public function __construct($name)//初始值起始動作可使用，ex:incloud,pdo等等
     {
         $this->name=$name;
     }
@@ -44,3 +44,21 @@ echo "<br>";
 echo $dog->setName('阿旺');
 echo $dog->getName();
 $dog->sit();
+echo "<br>";
+
+echo $dog->setName('山東D路飛');
+echo $dog->getName();
+echo "<hr>";
+class Cat extends Dog{
+
+}
+    
+$cat=new Cat('北京娜美');
+    echo $cat->getName();
+    echo "<br>";
+    echo $cat->setName('羅冰');
+    echo $cat->getName();
+    echo "<br>";
+    $cat->sit();
+    echo "<hr>";
+    
