@@ -40,6 +40,32 @@ class DB
         } else {
             echo "錯誤:沒有指定的資料表名稱";
         }
+    }   
+    function count($where = '', $other = '')
+    {
+        $sql = "select count(*) from `$this->table` ";
+
+        if (isset($this->table) && !empty($this->table)) {
+
+            if (is_array($where)) {
+
+                if (!empty($where)) {
+                    foreach ($where as $col => $value) {
+                        $tmp[] = "`$col`='$value'";
+                    }
+                    $sql .= " where " . join(" && ", $tmp);
+                }
+            } else {
+                $sql .= " $where";
+            }
+
+            $sql .= $other;
+            //echo 'all=>'.$sql;
+            $rows = $this->pdo->query($sql)->fetchColumn();
+            return $rows;
+        } else {
+            echo "錯誤:沒有指定的資料表名稱";
+        }
     }
 
 
@@ -65,50 +91,25 @@ class DB
     function save($array)
     {
         if (isset($array['id'])) {
-            $this->update($array['id'], $array);
-               } else {
-                            $this->insert($array);
-                           }
-        }
-    
-    protected function update($id, $cols)
-    {
-        $sql = "update `$this->table` set ";
+            $sql = "update `$this->table` set ";
 
-        if (!empty($cols)) {
-            foreach ($cols as $col => $value) {
-                $tmp[] = "`$col`='$value'";
+            if (!empty($cols)) {
+                foreach ($cols as $col => $value) {
+                    $tmp[] = "`$col`='$value'";
+                }
+            } else {
+                echo "錯誤:缺少要編輯的欄位陣列";
             }
+
+            $sql .= join(",", $tmp);
+            $sql .= " where `id`='{$array['id']}'";
         } else {
-            echo "錯誤:缺少要編輯的欄位陣列";
+            $sql = "insert into `$this->table` ";
+            $cols = "(`" . join("`,`", array_keys($array)) . "`)";
+            $vals = "('" . join("','", $array) . "')";
+
+            $sql = $sql . $cols . " values " . $vals;
         }
-
-        $sql .= join(",", $tmp);
-        $tmp = [];
-        if (is_array($id)) {
-            foreach ($id as $col => $value) {
-                $tmp[] = "`$col`='$value'";
-            }
-            $sql .= " where " . join(" && ", $tmp);
-        } else if (is_numeric($id)) {
-            $sql .= " where `id`='$id'";
-        } else {
-            echo "錯誤:參數的資料型態比須是數字或陣列";
-        }
-        // echo $sql;
-        return $this->pdo->exec($sql);
-    }
-
-    protected function insert($values)
-    {
-
-        $sql = "insert into `$this->table` ";
-        $cols = "(`" . join("`,`", array_keys($values)) . "`)";
-        $vals = "('" . join("','", $values) . "')";
-
-        $sql = $sql . $cols . " values " . $vals;
-
-        //echo $sql;
 
         return $this->pdo->exec($sql);
     }
@@ -131,6 +132,11 @@ class DB
 
         return $this->pdo->exec($sql);
     }
+    
+    function q($sql)
+    {
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 
 function dd($array)
@@ -142,5 +148,6 @@ function dd($array)
 
 
 $student = new DB('students');
-$rows = $student->all();
+// $rows = $student->q("select * from `students`");
+$rows = $student->count();
 dd($rows);
