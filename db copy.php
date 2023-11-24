@@ -66,11 +66,11 @@ class DB
     {
         if (isset($array['id'])) {
             $this->update($array['id'], $array);
-               } else {
-                            $this->insert($array);
-                           }
+        } else {
+            $this->insert($array);
         }
-    
+    }
+
     protected function update($id, $cols)
     {
         $sql = "update `$this->table` set ";
