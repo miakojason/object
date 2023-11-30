@@ -21,8 +21,7 @@ class DB{
         $sql = "select count(*) from `$this->table` ";
         $sql=$this->sql_all($sql,$where,$other);
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        
-    }
+        }
        // ---------------------find----------------------------------
       private function math($math,$col,$array='',$other=''){
         $sql = "select $math(`$col`) from `$this->table` ";
